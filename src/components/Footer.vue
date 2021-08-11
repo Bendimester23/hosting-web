@@ -2,28 +2,37 @@
   <div class="footer">
     <h1>Kapcsolat:</h1>
     <ul>
-      <li>
-        <v-icon>mdi-web</v-icon>Weboldal:
-        <a href="http://mlghost.hu"> mlghost.hu</a>
+      <li v-if="l.footer.website != ``">
+        <v-icon>mdi-web</v-icon>Weboldal: 
+        <a :href="`https://${l.footer.website}`"> {{l.footer.website}}</a>
       </li>
-      <li>
-        <v-icon>mdi-discord</v-icon>Discord:
-        <a href="http://dc.mlghost.hu"> dc.mlghost.hu</a>
+      <li v-if="l.footer.discord != ``">
+        <v-icon>mdi-discord</v-icon>Discord: 
+        <a :href="`https://${l.footer.discord}`"> {{l.footer.discord}}</a>
       </li>
-      <li>
-        <v-icon>mdi-email</v-icon>E-mail:
-        <a href="mailto:support@mlghost.hu">support@mlghost.hu</a>
+      <li v-if="l.footer.email != ``">
+        <v-icon>mdi-email</v-icon>E-mail: 
+        <a :href="`mailto:${l.footer.email}`">{{l.footer.email}}</a>
+      </li>
+      <li v-if="l.footer.phone != ``">
+        <v-icon>mdi-phone</v-icon>Telefonszám: 
+        <a>{{l.footer.phone}}</a>
       </li>
     </ul>
     <v-divider></v-divider>
-    <p class="copyright">&copy;2021 MLGHost</p>
+    <p class="copyright">&copy;{{new Date().getFullYear()}} {{l.appName}}</p>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import l from '@/locale.json'
+
 export default Vue.extend({
-  name: "Footer"
+  name: "Footer",
+  data: () => ({
+    l
+  })
 });
 </script>
 
@@ -38,7 +47,7 @@ export default Vue.extend({
   h1 {
     text-align: center;
     font-weight: 400;
-    font-size: 50px;
+    font-size: 40px;
     margin-top: 15px;
     margin-bottom: 15px;
   }

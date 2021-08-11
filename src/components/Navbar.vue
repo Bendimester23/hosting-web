@@ -9,7 +9,7 @@
         alt="logo"
         class="brandLogo"
       />
-      <p class="brandName">MLGHost</p>
+      <p class="brandName">{{l.appName}}</p>
     </div>
     <v-spacer :v-if="!showDrawer"></v-spacer>
     <div class="btnGroup" :v-if="showDrawer">
@@ -37,6 +37,8 @@
 
 <script lang="ts">
 import Vue from "vue";
+import l from '@/locale.json'
+
 export default Vue.extend({
   name: "Navbar",
   data: function() {
@@ -44,7 +46,8 @@ export default Vue.extend({
       mobileNavOpen: false,
       hiding: false,
       width: window.innerWidth,
-      showUserDropdow: false
+      showUserDropdow: false,
+      l
     };
   },
   computed: {
@@ -87,7 +90,7 @@ export default Vue.extend({
           this.$router.push("/services");
           break;
         case 2:
-          window.open("https://panel.mlghost.hu", "_blank");
+          window.open(l.navbar.panelUrl, "_blank");
           break;
         case 3:
           if (this.isLoggedIn) this.showUserDropdow = !this.showUserDropdow;

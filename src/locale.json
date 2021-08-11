@@ -1,8 +1,6 @@
 {
     "appName": "XY Hosting",
-    "titleBlack": false,
     "catchPhrase": "Ocsó hoszzzzzzzztingg",
-    "catchPhraseBlack": false,
     "features": {
         "title": "Miért válassz minket",
         "description": " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sed eros congue, lacinia elit quis, bibendum ante. Nunc quis ex id lorem hendrerit dictum.",
@@ -23,5 +21,15 @@
                 "description": "Szeretjük a pingvineket, mert cukik. Aliquam sed eros congue, lacinia elit quis, bibendum ante. Nunc quis ex id lorem hendrerit dictum. "
             }
         ]
+    },
+    "navbar": {
+        "panelUrl": "https://pterodactyl.io"
+    },
+    "footer": {
+        "title": "Elérhetőségek",
+        "website": "pornhub.com",
+        "discord": "dc.discord.com",
+        "email": "lábamközött@gmail.com",
+        "phone": "06 20 420 6969"
     }
 }

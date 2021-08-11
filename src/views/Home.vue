@@ -1,9 +1,9 @@
 <template>
   <div class="home">
     <div class="landing">
-      <h1 v-bind:class="{blackTxt: l.titleBlack}">{{l.appName}}</h1>
+      <h1>{{l.appName}}</h1>
       <br />
-      <h3 v-bind:class="{blackTxt: l.catchPhraseBlack}">
+      <h3>
         {{l.catchPhrase}}
       </h3>
     </div>
@@ -16,7 +16,6 @@
         <FeatureCard :d="l.features.cards[0]"/>
         <FeatureCard :d="l.features.cards[1]"/>
         <FeatureCard :d="l.features.cards[2]"/>
-        
       </div>
     </div>
     <div class="p-div"></div>
@@ -53,10 +52,6 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.blackTxt {
-  color: #000000 !important;
-}
-
 .home {
   display: flex;
   flex-direction: column;

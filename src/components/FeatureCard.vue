@@ -21,10 +21,13 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+@import "../colors.scss";
+
 .card {
         margin-right: 1%;
-        max-width: 350px;
+        max-width: 350px !important;
         min-height: 210px;
+        background-color: $feature-card-bg !important;
         .card-title {
           margin-bottom: -5px;
           margin-top: -5px;
@@ -35,6 +38,7 @@ export default Vue.extend({
             margin-top: 15px;
             font-size: 30px;
             text-align: center;
+            color: $feature-card-title !important;
           }
         }
         .card-icon {
@@ -42,6 +46,10 @@ export default Vue.extend({
           justify-self: center;
           font-size: 50px;
           margin-top: 10px;
+          color: $feature-card-icon !important;
+        }
+        .card-desc {
+            color: $feature-card-text !important;
         }
       }
 </style>
