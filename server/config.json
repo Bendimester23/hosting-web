@@ -1,0 +1,25 @@
+{
+    "connection_url": "mongodb://127.0.0.1:27017/api",
+    "token_secret": "s3cr3t",
+    "saltLenght": 10,
+    "port": 3000,
+    "token_timeout": 3000,
+    "api_keys": {
+        "paypal": "",
+        "stripe": ""
+    },
+    "schemas": {
+        "username": {
+            "min": 6,
+            "max": 255
+        },
+        "email": {
+            "min": 6,
+            "max": 255
+        },
+        "password": {
+            "min": 6,
+            "max": 1024
+        }
+    }
+}

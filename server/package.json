@@ -1,0 +1,32 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "backend code go brrrrrrr",
+  "main": "index.js",
+  "author": "Bendi",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "tscw": "tsc -w",
+    "nodem": "nodemon .",
+    "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' index.ts"
+  },
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "@types/ip6addr": "^0.2.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^4.3.1",
+    "ip-address": "^7.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.11",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/hapi__joi": "^17.1.6",
+    "@types/morgan": "^1.9.2",
+    "ts-node": "^10.2.0"
+  }
+}

@@ -1,0 +1,38 @@
+<template>
+  <v-app>
+    <navbar/>
+    <v-main>  
+      <router-view/>
+    </v-main>
+  </v-app>
+</template>
+
+<script lang="ts">
+import Vue from 'vue';
+import Navbar from '@/components/Navbar.vue'
+
+export default Vue.extend({
+  name: 'App',
+
+  components: {
+    Navbar
+  },
+
+  data: () => ({
+    //
+  }),
+});
+</script>
+
+<style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;800&display=swap');
+* {
+  font-family: 'Nunito';
+}
+
+body{
+  padding:0;
+  margin:0;
+  overflow-x: hidden;
+}
+</style>
