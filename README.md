@@ -1,4 +1,5 @@
-# mlgweb
+# hosting-web
+This is a random website. Run `yarn` then edit src/locale.json and src/colors.scss and run `yarn build` to build it.
 
 ## Project setup
 ```

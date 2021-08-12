@@ -1,5 +1,5 @@
 {
-    "appName": "XY Hosting",
+    "appName": "XYZ Hosting",
     "catchPhrase": "Ocsó hoszzzzzzzztingg",
     "features": {
         "title": "Miért válassz minket",
@@ -23,7 +23,8 @@
         ]
     },
     "navbar": {
-        "panelUrl": "https://pterodactyl.io"
+        "panelUrl": "https://pterodactyl.io",
+        "icon": "https://media.discordapp.net/attachments/738853555393265718/788006317553221652/MLG-Host_LOGO.png"
     },
     "footer": {
         "title": "Elérhetőségek",

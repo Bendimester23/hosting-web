@@ -1,5 +1,5 @@
 {
-    "connection_url": "mongodb://127.0.0.1:27017/api",
+    "connection_url": "mongodb+srv://api:mHR98aPA4WqyWVQ@cluster001.7cmi1.mongodb.net/api?retryWrites=true&w=majority",
     "token_secret": "s3cr3t",
     "saltLenght": 10,
     "port": 3000,

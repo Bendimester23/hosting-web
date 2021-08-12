@@ -60,7 +60,7 @@ export default Vue.extend({
     display: inline-flex;
     height: 500px;
     overflow: hidden;
-    background-image: url("../assets/landing.png");
+    background-image: url("../assets/landing.webp");
     background-size: cover;
     background-attachment: fixed;
     flex-direction: column;
@@ -110,7 +110,7 @@ export default Vue.extend({
 
   .p-div {
     display: flex;
-    background-image: url("../assets/parallax.jpg");
+    background-image: url("../assets/parallax.webp");
     background-size: cover;
     background-attachment: fixed;
     height: 400px;
@@ -118,7 +118,7 @@ export default Vue.extend({
 
   .p-div-a {
     display: flex;
-    background-image: url("../assets/parallax2.png");
+    background-image: url("../assets/parallax2.webp");
     background-size: cover;
     background-attachment: fixed;
     height: 400px;

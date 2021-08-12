@@ -15,7 +15,7 @@ authRouter.get('/', (req, res) => {
 });
 
 authRouter.post('/register', async (req, res) => {
-    const { error } = registerSchema.validate(req.query)
+    const { error } = registerSchema.validate(req.body)
     if (error) {
         res.status(400).send(error.toString());
         return;
@@ -23,10 +23,10 @@ authRouter.post('/register', async (req, res) => {
 
     const salt = await crypt.genSalt(config.saltLenght);
 
-    let user = new User({
-        username: req.query.username,
-        email: req.query.email,
-        password: await crypt.hash('' + req.query.password, salt),
+    const user = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: await crypt.hash('' + req.body.password, salt),
         isAdmin: false
     })
 
@@ -59,7 +59,7 @@ authRouter.post('/login', async (req, res) => {
         return;
     }
 
-    let userRef = await User.findOne({ name: req.body.username });
+    const userRef = await User.findOne({ username: req.body.username });
 
     if (userRef == null || userRef == undefined) {
         res.status(400).send("Error: Email or password is wrong!");
@@ -85,8 +85,8 @@ authRouter.post('/refresh', verify, async (req, res) => {
         return;
     }
 
-    let userRef = await User.findOne({ name: req.query.username });
-    let tokenUser = await User.findById((req as any).user._id);
+    const userRef = await User.findOne({ name: req.query.username });
+    const tokenUser = await User.findById((req as any).user._id);
 
     if (req.query.token != req.header('auth-token')) {
         res.status(403).send("Error: Username or token is wrong!");

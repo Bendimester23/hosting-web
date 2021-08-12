@@ -5,7 +5,7 @@
   >
     <div class="branding" v-on:click="clickBtn(0)">
       <img
-        src="https://media.discordapp.net/attachments/738853555393265718/788006317553221652/MLG-Host_LOGO.png"
+        :src="l.navbar.icon"
         alt="logo"
         class="brandLogo"
       />
@@ -93,7 +93,7 @@ export default Vue.extend({
           window.open(l.navbar.panelUrl, "_blank");
           break;
         case 3:
-          if (this.isLoggedIn) this.showUserDropdow = !this.showUserDropdow;
+          if (this.isLoggedIn) this.$router.push(`/dashboard`)
           else this.$router.push("/login");
           break;
         case 4:
