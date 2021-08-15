@@ -20,7 +20,7 @@ export default Vue.extend({
     data: () => ({
       products: [
         {
-          id: `DHFghGFhfgJg46FDhf`,
+          _id: `DHFghGFhfgJg46FDhf`,
           name: `EPiK Szerver 2000`,
           description: `Egy naon epikk szerver, ami naon jó is.`,
           features: [

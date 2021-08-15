@@ -1,12 +1,11 @@
 import * as express from 'express';
 import crypt from 'bcryptjs';
-import * as mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import { registerSchema, loginSchema, refreshSchema } from '../model/schemas';
-import User from '../database/models/User';
+import User, { UserType } from '../database/models/User';
 import config from '../config.json';
 import { Address6 } from 'ip-address';
-import verify from './verify';
+import { verify } from './verify';
 
 const authRouter = express.Router();
 
@@ -23,13 +22,6 @@ authRouter.post('/register', async (req, res) => {
 
     const salt = await crypt.genSalt(config.saltLenght);
 
-    const user = new User({
-        username: req.body.username,
-        email: req.body.email,
-        password: await crypt.hash('' + req.body.password, salt),
-        isAdmin: false
-    })
-
     const nameExist = await User.exists({ username: req.query.username });
     if (nameExist) {
         res.status(200).json({
@@ -39,8 +31,15 @@ authRouter.post('/register', async (req, res) => {
         return;
     }
 
+    const user = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: await crypt.hash('' + req.body.password, salt),
+        isAdmin: false
+    })
+
     try {
-        const saved = await user.save();
+        await user.save();
         res.status(200).send('Succes!');
         return;
     } catch (err) {
@@ -59,19 +58,21 @@ authRouter.post('/login', async (req, res) => {
         return;
     }
 
-    const userRef = await User.findOne({ username: req.body.username });
+    const userRef: UserType = await User.findOne({ username: req.body.username }) as any;
 
     if (userRef == null || userRef == undefined) {
         res.status(400).send("Error: Email or password is wrong!");
         return;
     }
 
-    const match = await crypt.compare(req.body.password, (userRef.toObject() as any).password);
+    const match = await crypt.compare(req.body.password, userRef.password);
     if (match) {
         const token = jwt.sign({ _id: userRef._id, date: Date.now(), ip: ip }, config.token_secret);
+        userRef.password = `secret`
         res.header('auth-token', token).json({
             token: token,
-            refresh: config.token_timeout
+            refresh: config.token_timeout,
+            user: userRef
         });
     } else {
         res.status(403).send('Error: WrongPassword');

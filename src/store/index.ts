@@ -10,9 +10,11 @@ export default new Vuex.Store({
       size: 0
     },
     login: {
-      authToken: '',
+      authToken: ``,
       loggedIn: false,
-      username: ''
+      username: ``,
+      email: ``,
+      isAdmin: false
     }
   },
   mutations: {
@@ -22,8 +24,10 @@ export default new Vuex.Store({
     setLoggedIn(state: any, loggedIn: boolean) {
       state.login.loggedIn = loggedIn;
     },
-    setUsername(state: any, username: string) {
-      state.login.username = username;
+    setUser(state: any, user: any) {
+      state.login.username = user.username;
+      state.login.email = user.email;
+      state.login.isAdmin = user.isAdmin;
     }
   },
   actions: {

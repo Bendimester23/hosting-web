@@ -2,6 +2,11 @@
   <div class="dashboard">
     <h1>Menü</h1>
     <p>Hello, {{username}}!</p>
+    <div class="admin" v-if="$store.state.login.isAdmin">
+      <h1>Admin panel</h1>
+      <v-btn>Kategória hozzáadása</v-btn>
+      <v-btn>Termék hozzáadása</v-btn>
+    </div>
   </div>
 </template>
 

@@ -21,11 +21,13 @@
     "helmet": "^4.3.1",
     "ip-address": "^7.1.0",
     "jsonwebtoken": "^8.5.1",
+    "md5": "^2.3.0",
     "mongoose": "^5.11.11",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
     "@types/hapi__joi": "^17.1.6",
+    "@types/md5": "^2.3.1",
     "@types/morgan": "^1.9.2",
     "ts-node": "^10.2.0"
   }
