@@ -1,13 +1,19 @@
 import { Router } from 'express';
 import { invalidateCache, makeCache } from '../cache';
 import Category from '../database/models/Category';
-import { categoryScheme } from '../model/schemas';
+import { categoryScheme, editCategoryScheme } from '../model/schemas';
 import { isAdmin, verify } from './verify';
 
 const categoriesRouter = Router();
 
-categoriesRouter.get(`/all`, makeCache(`allCategories`, 3600, async (req: Request) => {
-    return await Category.find({});
+categoriesRouter.get(`/all`, makeCache(`allCategories`, 1000 * 60 * 30, async (req: Request) => {
+    return (await Category.find({})).map((e: any) => {
+        return {
+            name: e.name,
+            description: e.description,
+            id: e._id
+        }
+    });
 }));
 
 categoriesRouter.put(`/new`, [ verify, isAdmin ], async (req: Request, res) => {
@@ -19,10 +25,39 @@ categoriesRouter.put(`/new`, [ verify, isAdmin ], async (req: Request, res) => {
         })
         return
     }
-    invalidateCache(`allCategories`)
-    await Category.create(req.body)
+    try {
+        await Category.create(req.body)
+    } catch (e) {
+        res.status(500).send({
+            error: `Category already exists.`
+        })
+        return
+    }
     res.send({
         status: `Success`
+    })
+    invalidateCache(`allCategories`)
+})
+
+categoriesRouter.patch(`/:name`, [verify, isAdmin], async (req, res) => {
+    const { error } = editCategoryScheme.validate(req.body)
+    if (error != undefined) {
+        res.status(400).send({
+            message: `Validation error`,
+            error: error
+        })
+        return
+    }
+    console.log(req.params.name);
+    
+    const document = await Category.findOne({
+        name: req.params.name
+    });
+
+    (document as any).description = req.body;
+    await document.save()
+    res.send({
+        status: `success`
     })
 })
 

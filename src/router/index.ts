@@ -29,6 +29,11 @@ const routes: Array<RouteConfig> = [
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import(/* webpackChunkName: "order" */ '../views/Dashboard.vue')
+  },
+  {
+    path: `/admin/category`,
+    name: `CategoryAdmin`,
+    component: () => import(/* webpackChunkName: "admin" */ `../views/admin/AddCategory.vue`)
   }
 ]
 

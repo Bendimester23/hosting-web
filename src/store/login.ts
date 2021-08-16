@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Commit } from 'vuex'
 
-const API_URL = /*`http://46.31.178.145:3000/auth`;*/'http://localhost:3000/auth';
+export const API_URL = `http://46.31.178.145:3000`;/*'http://localhost:3000/auth';*/
 
 export async function logoutA(commit: Commit) {
     commit('setToken', '');
@@ -14,17 +14,33 @@ export async function logoutA(commit: Commit) {
 }
 
 export async function loginA(commit: Commit, username: string, password: string) {
-    const resp = await axios.post(API_URL + '/login', {
+    const { status, data } = await axios.post(`${API_URL}/auth/login`, {
         username: username,
         password: password
     });
-    if (resp.status != 200) {
+    if (status != 200) {
         //error
         logoutA(commit)
-        console.error(resp);
         return;
     }
-    commit('setToken', resp.data.token);
+    commit('setToken', data.token);
     commit('setLoggedIn', true);
-    commit('setUser', resp.data.user);
+    commit('setUser', data.user);
+    localStorage.setItem(`token`, data.token)
+}
+
+export async function refreshA(commit: Commit, token: string) {
+    const { data, status } = await axios.get(`${API_URL}/auth/refresh?isAdmin=false`, {
+        headers: {
+            Authorization: token
+        }
+    });
+    if (status != 200) {
+        logoutA(commit);
+        return;
+    }
+
+    commit('setToken', data.token);
+    commit('setLoggedIn', true);
+    commit('setUser', data.user);
 }

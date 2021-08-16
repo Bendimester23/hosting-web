@@ -2,7 +2,7 @@ import { NextFunction } from 'express';
 import { Address6 } from 'ip-address';
 import jwt from 'jsonwebtoken';
 import config from '../config.json';
-import User from '../database/models/User';
+import User, { UserType } from '../database/models/User';
 
 export function verify(req, res, next: NextFunction) {
     const ip = new Address6(req.socket.remoteAddress).to4().address;
@@ -29,10 +29,8 @@ export function verify(req, res, next: NextFunction) {
 }
 
 export async function isAdmin(req, res, next: NextFunction) {
-    const user = await User.findOne({
-        _id: req.user
-    })
+    const user: UserType = await User.findById(req.user._id) as any
 
-    if ((user as any).isAdmin) next()
+    if (user.isAdmin) next();
     else res.status(403).send("Error: Acces Denied");
 }

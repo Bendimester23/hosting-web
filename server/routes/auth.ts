@@ -1,7 +1,7 @@
 import * as express from 'express';
 import crypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { registerSchema, loginSchema, refreshSchema } from '../model/schemas';
+import { registerSchema, loginSchema } from '../model/schemas';
 import User, { UserType } from '../database/models/User';
 import config from '../config.json';
 import { Address6 } from 'ip-address';
@@ -16,7 +16,7 @@ authRouter.get('/', (req, res) => {
 authRouter.post('/register', async (req, res) => {
     const { error } = registerSchema.validate(req.body)
     if (error) {
-        res.status(400).send(error.toString());
+        res.status(400).send(error);
         return;
     }
 
@@ -26,7 +26,7 @@ authRouter.post('/register', async (req, res) => {
     if (nameExist) {
         res.status(200).json({
             status: "error",
-            error: "Error: Already registered!"
+            error: "Error: Username already taken!"
         });
         return;
     }
@@ -34,7 +34,7 @@ authRouter.post('/register', async (req, res) => {
     const user = new User({
         username: req.body.username,
         email: req.body.email,
-        password: await crypt.hash('' + req.body.password, salt),
+        password: await crypt.hash(req.body.password, salt),
         isAdmin: false
     })
 
@@ -54,7 +54,7 @@ authRouter.post('/login', async (req, res) => {
 
     const { error } = loginSchema.validate(req.body)
     if (error) {
-        res.status(400).send(error.toString());
+        res.status(400).send(error);
         return;
     }
 
@@ -69,7 +69,7 @@ authRouter.post('/login', async (req, res) => {
     if (match) {
         const token = jwt.sign({ _id: userRef._id, date: Date.now(), ip: ip }, config.token_secret);
         userRef.password = `secret`
-        res.header('auth-token', token).json({
+        res.header('Authorizaton', token).json({
             token: token,
             refresh: config.token_timeout,
             user: userRef
@@ -79,41 +79,26 @@ authRouter.post('/login', async (req, res) => {
     }
 });
 
-authRouter.post('/refresh', verify, async (req, res) => {
-    const { error } = refreshSchema.validate(req.query)
-    if (error) {
-        res.status(500).send(error.toString());
-        return;
-    }
+authRouter.get('/refresh', verify, async (req, res) => {
+    const tokenUser: UserType = await User.findById((req as any).user._id) as any;
 
-    const userRef = await User.findOne({ name: req.query.username });
-    const tokenUser = await User.findById((req as any).user._id);
-
-    if (req.query.token != req.header('auth-token')) {
+    if (tokenUser == null || tokenUser == undefined) {
         res.status(403).send("Error: Username or token is wrong!");
         return;
     }
 
-    if (userRef == null || userRef == undefined || tokenUser == null || tokenUser == undefined) {
-        res.status(403).send("Error: Username or token is wrong!");
-        return;
-    }
-
-    if ((userRef.toObject() as any).name != (tokenUser.toObject() as any).name) {
-        res.status(403).send("Error: Username or token is wrong!");
-        return;
-    }
-
-    if (req.query.isAdmin == 'true' && !((tokenUser.toObject() as any).isAdmin || false)) {
+    if (req.query.isAdmin == 'true') {
         res.setHeader('X-Nice-Try', 'Nerd')
         res.status(403).send('Error: This will not work!');
         return;
     }
 
-    const token = jwt.sign({ _id: userRef._id, date: Date.now() }, config.token_secret);
-    res.header('auth-token', token).json({
+    const token = jwt.sign({ _id: tokenUser._id, date: Date.now() }, config.token_secret);
+    tokenUser.password = `***`
+    res.header('Authorization', token).json({
         token: token,
-        refresh: config.token_timeout
+        refresh: config.token_timeout,
+        user: tokenUser
     });
 })
 

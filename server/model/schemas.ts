@@ -29,19 +29,6 @@ export const loginSchema = Joi.object({
         .required()
 });
 
-export const refreshSchema = Joi.object({
-    username: Joi.string()
-        .min(schemas.username.min)
-        .max(schemas.username.max)
-        .required(),
-    token: Joi.string()
-        .min(6)
-        .max(1024)
-        .required(),
-    isAdmin: Joi.boolean()
-        .required()
-});
-
 export const productScheme = Joi.object({
     name: Joi.string()
         .required()
@@ -94,3 +81,9 @@ export const categoryScheme = Joi.object({
         .min(schemas.category.description.min)
         .max(schemas.category.description.max)
 })
+
+export const editCategoryScheme = Joi.string()
+    .required()
+    .min(schemas.category.description.min)
+    .max(schemas.category.description.max)
+

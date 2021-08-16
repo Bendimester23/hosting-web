@@ -21,6 +21,11 @@ export default Vue.extend({
   data: () => ({
     //
   }),
+  mounted() {
+    if (localStorage.getItem(`token`) != undefined) {
+      this.$store.dispatch(`refresh`, localStorage.getItem(`token`))
+    }
+  }
 });
 </script>
 

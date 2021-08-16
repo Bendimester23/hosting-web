@@ -19,9 +19,9 @@ GET http://localhost:3000/category/all HTTP/1.1
 
 PUT http://localhost:3000/category/new HTTP/1.1
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTE0ZjZkNmExMzQzNzNjNmQ5MWUwZTYiLCJkYXRlIjoxNjI5MDU3NDkzNTE2LCJpcCI6IjEyNy4wLjAuMSIsImlhdCI6MTYyOTA1NzQ5M30.eRjwumG2PuQSddo2ZAc_tqftH2LEbVo7hY29WxlZTCs
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Mjg0MTEyNzMsImp0aSI6IjI5Iiwic3ViIjoiMzM2MjMzNjczOTExMTczMTIwIn0.mWaNc0IOT0q-3XE9FwG0N1kLIGRMj-mItGKY_WOEd48
 
 {
-    "name": "Teszt",
-    "description": "Teszt kategória"
+    "name": "Teszt4",
+    "description": "Még egy teszt kategória"
 }
