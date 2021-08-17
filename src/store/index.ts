@@ -18,7 +18,9 @@ export default new Vuex.Store({
       isAdmin: false
     },
     categories: [],
-    fetchedCategories: false
+    fetchedCategories: false,
+    schema: {},
+    fetchedSchema: false
   },
   mutations: {
     setToken(state: any, token: string) {
@@ -35,17 +37,21 @@ export default new Vuex.Store({
     setCategories(state: any, data: any) {
       state.categories = data.c;
       state.fetchCategories = data.f;
+    },
+    setSchema(state, data) {
+      state.schema = data;
+      state.fetchedSchema = true;
     }
   },
   actions: {
     login(store: any, data: any) {
-      loginA(store.commit, data.username, data.password);
+      return loginA(store.commit, data.username, data.password);
     },
     logOut(store: any) {
       logoutA(store.commit);
     },
     refresh(store: any, token: string) {
-      refreshA(store.commit, token)
+      return refreshA(store.commit, token)
     },
     async fetchCategories(store: any, force: boolean) {
       return new Promise<void>((res, rej) => {
@@ -89,13 +95,16 @@ export default new Vuex.Store({
           rej();
           return;
         }
-        axios.patch(`${API_URL}/category/${category.name}`, category.description, {
+        axios.patch(`${API_URL}/category/${category.oldName}`, {
+          description: category.description,
+          name: category.name
+        }, {
           headers: {
             Authorization: store.state.login.authToken
           }
         })
         .then(({ status }) => {
-          if (status != 200) {
+          if (status != 204) {
             rej();
             return
           }
@@ -103,6 +112,32 @@ export default new Vuex.Store({
           store.dispatch(`fetchCategories`, true)
         }).catch(e => rej())
       })
+    },
+    async deleteCategory(store, name) {
+      return new Promise<void>((res, rej) => {
+        if (!store.state.login.loggedIn) {
+          rej();
+          return;
+        }
+        axios.delete(`${API_URL}/category/${name}`, {
+          headers: {
+            Authorization: store.state.login.authToken
+          }
+        })
+        .then(({ status }) => {
+          if (status != 204) {
+            rej();
+            return
+          }
+          res();
+          store.dispatch(`fetchCategories`, true)
+        }).catch(e => rej())
+      })
+    },
+    async fetchSchema(store) {
+      if (store.state.fetchedSchema) return
+      const { data } = await axios.get(`${API_URL}/config`)
+      store.commit(`setSchema`, data)
     }
   },
   modules: {

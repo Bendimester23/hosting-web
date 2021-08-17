@@ -13,17 +13,17 @@
     <div class="mainContent">
       <div v-if="!isEditing">
         <h2>{{ currentData.name }}</h2>
-        <p>{{ currentData.description }}</p>
+        <p class="cat-card-desc">{{ currentData.description }}</p>
       </div>
       <div v-else>
         <v-text-field
           outlined
-          label="Termék neve"
+          label="Kategória neve"
           v-model="newData.name"
         ></v-text-field>
         <v-textarea
           outlined
-          label="Termék leírása"
+          label="Kategóriat leírása"
           v-model="newData.description"
         ></v-textarea>
       </div>
@@ -45,7 +45,7 @@
           <v-btn icon @click="startEditing()">
             <v-icon> mdi-pencil </v-icon>
           </v-btn>
-          <v-btn icon>
+          <v-btn icon @click="deleteCategory()">
             <v-icon class="delete-icon"> mdi-delete </v-icon>
           </v-btn>
         </div>
@@ -72,15 +72,25 @@ export default Vue.extend({
   },
   data: () => ({
     isEditing: false,
-    newData: {},
-    currentData: {},
+    newData: {
+      name: ``,
+      description: ``,
+    },
+    currentData: {
+      name: ``,
+      description: ``,
+    },
     isLoading: false,
-    hasError: false
+    hasError: false,
+    oldName: ``,
+    nameRules: [],
+    descriptionRules: []
   }),
   methods: {
     startEditing() {
       this.isEditing = true;
       this.newData = this.category;
+      this.oldName = this.newData.name;
     },
     cancelEdit() {
       this.newData = this.currentData;
@@ -91,9 +101,12 @@ export default Vue.extend({
       this.currentData = this.newData;
       this.cancelEdit();
       this.isLoading = true;
-      (this.currentData as any).description = (this.currentData as any).description.replace(/\n/g, `<br>`)
       this.$store
-        .dispatch(`editCategory`, this.currentData)
+        .dispatch(`editCategory`, {
+          name: this.currentData.name,
+          description: this.currentData.description,
+          oldName: this.oldName,
+        })
         .then(() => {
           this.isLoading = false;
         })
@@ -102,9 +115,20 @@ export default Vue.extend({
           this.hasError = true;
         });
     },
+    deleteCategory() {
+      this.cancelEdit();
+      this.$store.dispatch(`deleteCategory`, this.currentData.name)
+      .then(() => this.cancelEdit())
+      .catch(() => this.hasError = true);
+    }
   },
   mounted() {
     this.currentData = this.category;
+    this.$store.dispatch(`fetchSchema`)
+    .then(() => {
+      const schema = this.$store.state.schema;
+      
+    })
   },
 });
 </script>
@@ -113,6 +137,10 @@ export default Vue.extend({
 .errorIcon {
   display: flex;
   align-items: center;
+}
+
+.cat-card-desc {
+  white-space: pre;
 }
 
 .category-card {

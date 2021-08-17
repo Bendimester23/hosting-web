@@ -2,14 +2,19 @@
   <div class="dashboard">
     <h1>Menü</h1>
     <p>Hello, {{ username }}!</p>
+    <div class="normal-btns">
+      <v-btn-toggle>
+        <v-btn @click="logout()">Kilépés</v-btn>
+      </v-btn-toggle>
+    </div>
     <div class="admin" v-if="$store.state.login.isAdmin">
       <h1>Admin panel</h1>
-      <v-btn @click="setCurrentPage(`/admin/category`)"
-        >Kategória hozzáadása</v-btn
-      >
-      <v-btn @click="setCurrentPage(`/admin/product`)">
-        Termék hozzáadása
-      </v-btn>
+      <div class="btns">
+      <v-btn-toggle>
+        <v-btn @click="setCurrentPage(`/admin/category`)">Kategóriák</v-btn>
+        <v-btn @click="setCurrentPage(`/admin/product`)"> Termékek </v-btn>
+      </v-btn-toggle>
+      </div>
     </div>
   </div>
 </template>
@@ -18,30 +23,43 @@
 import Vue from "vue";
 export default Vue.extend({
   name: "Dashboard",
-  data: () => ({}),
   computed: {
-    isLoggedIn: function (): boolean {
-      return this.$store.state.login.loggedIn;
-    },
     username: function (): string {
       return this.$store.state.login.username;
     },
   },
-  watch: {
-    isLoggedIn: function (val) {
-      if (!val) this.$router.push({ path: "/login" });
-    },
-  },
-  mounted() {
-    if (!this.isLoggedIn) this.$router.push({ path: "/login" });
-  },
   methods: {
     setCurrentPage(page: string) {
-      this.$router.push({path: page})
+      this.$router.push({ path: page });
+    },
+    logout() {
+      this.$store.dispatch(`logOut`)
+      this.$router.push({ path: `/login` })
     }
   },
 });
 </script>
 
 <style lang="scss">
+@import "../colors.scss";
+
+.dashboard {
+  background-color: $panel-color;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  .admin {
+    display: flex;
+    flex-direction: column;
+    .btns {
+      display: flex;
+      flex-direction: row;
+    }
+    h1 {
+      margin-bottom: 5px;
+    }
+  }
+}
 </style>

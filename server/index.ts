@@ -4,7 +4,8 @@ import cors from 'cors';
 import connect from './database/connect';
 import morgan from 'morgan';
 
-import * as CONFIG from './config.json';
+// eslint-disable-next-line @typescript-eslint/camelcase
+import { port, connection_url, schemas } from './config.json';
 
 //Routes
 import authRouter from './routes/auth';
@@ -28,5 +29,7 @@ app.use('/auth', authRouter);
 app.use(`/products`, productsRouter)
 app.use(`/category`, categoriesRouter)
 
-app.listen(CONFIG.port, () => console.log(`[HTTP] Server is running on port ${CONFIG.port}!`));
-connect(CONFIG.connection_url);
+app.get(`/config`, (req, res) => res.send(schemas))
+
+app.listen(port, () => console.log(`[HTTP] Server is running on port ${port}!`));
+connect(connection_url);

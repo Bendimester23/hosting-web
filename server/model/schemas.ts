@@ -81,9 +81,3 @@ export const categoryScheme = Joi.object({
         .min(schemas.category.description.min)
         .max(schemas.category.description.max)
 })
-
-export const editCategoryScheme = Joi.string()
-    .required()
-    .min(schemas.category.description.min)
-    .max(schemas.category.description.max)
-

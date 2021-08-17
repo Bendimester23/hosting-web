@@ -11,6 +11,7 @@ export async function logoutA(commit: Commit) {
         email: ``,
         isAdmin: false
     });
+    localStorage.removeItem(`token`)
 }
 
 export async function loginA(commit: Commit, username: string, password: string) {
@@ -21,6 +22,7 @@ export async function loginA(commit: Commit, username: string, password: string)
     if (status != 200) {
         //error
         logoutA(commit)
+        throw new Error(`Login failed!`)
         return;
     }
     commit('setToken', data.token);
@@ -37,6 +39,7 @@ export async function refreshA(commit: Commit, token: string) {
     });
     if (status != 200) {
         logoutA(commit);
+        throw new Error("Failed to refresh session.")
         return;
     }
 

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { invalidateCache, makeCache } from '../cache';
 import Category from '../database/models/Category';
-import { categoryScheme, editCategoryScheme } from '../model/schemas';
+import { categoryScheme } from '../model/schemas';
 import { isAdmin, verify } from './verify';
 
 const categoriesRouter = Router();
@@ -33,14 +33,12 @@ categoriesRouter.put(`/new`, [ verify, isAdmin ], async (req: Request, res) => {
         })
         return
     }
-    res.send({
-        status: `Success`
-    })
+    res.status(204).send()
     invalidateCache(`allCategories`)
 })
 
 categoriesRouter.patch(`/:name`, [verify, isAdmin], async (req, res) => {
-    const { error } = editCategoryScheme.validate(req.body)
+    const { error } = categoryScheme.validate(req.body)
     if (error != undefined) {
         res.status(400).send({
             message: `Validation error`,
@@ -48,17 +46,39 @@ categoriesRouter.patch(`/:name`, [verify, isAdmin], async (req, res) => {
         })
         return
     }
-    console.log(req.params.name);
     
     const document = await Category.findOne({
         name: req.params.name
     });
 
-    (document as any).description = req.body;
+    if (document == undefined) {
+        res.status(404).send({
+            error: `Not Found`
+        })
+        return
+    }
+
+    (document as any).description = req.body.description;
+    (document as any).name = req.body.name;
     await document.save()
-    res.send({
-        status: `success`
-    })
+    res.status(204).send()
+})
+
+categoriesRouter.delete(`/:name`, [ verify, isAdmin ], async (req, res) => {
+    const document = await Category.findOne({
+        name: req.params.name
+    });
+
+    if (document == undefined) {
+        res.status(404).send({
+            error: `Not Found`
+        })
+        return
+    }
+
+    await document.delete();
+    invalidateCache(`allCategories`)
+    res.status().send()
 })
 
 export default categoriesRouter;

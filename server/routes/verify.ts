@@ -17,9 +17,9 @@ export function verify(req, res, next: NextFunction) {
         if (expire < Date.now()) {
             return res.status(403).send("Error: Acces Denied: Expired token!");
         }
-        if (verified.ip != ip) {
-            return res.status(403).send("Error: Acces Denied: Wrong IP!");
-        }
+        //if (verified.ip != ip) {
+        //    return res.status(403).send("Error: Acces Denied: Wrong IP!");
+        //}
         req.user = verified;
         next();
     } catch (error) {
@@ -29,7 +29,7 @@ export function verify(req, res, next: NextFunction) {
 }
 
 export async function isAdmin(req, res, next: NextFunction) {
-    const user: UserType = await User.findById(req.user._id) as any
+    const user = await User.findById(req.user._id) as unknown as UserType
 
     if (user.isAdmin) next();
     else res.status(403).send("Error: Acces Denied");

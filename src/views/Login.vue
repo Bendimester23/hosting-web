@@ -7,7 +7,7 @@
           v-model="name"
           :rules="nameRules"
           filled
-          color="#000"
+          color="#000000"
           label="Felhasználónév"
           required
         ></v-text-field>
@@ -16,7 +16,7 @@
           v-model="password"
           :rules="passwordRules"
           filled
-          color="#000"
+          color="#000000"
           label="Jelszó"
           type="password"
         ></v-text-field>
@@ -26,6 +26,17 @@
         </v-btn>
       </v-form>
     </div>
+    <v-snackbar v-model="error">
+      {{errorText}}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="red" icon v-bind="attrs" @click="error = false">
+          <v-icon>
+            mdi-close-circle-outline
+          </v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -33,41 +44,66 @@
 import Vue from "vue";
 export default Vue.extend({
   name: "Login",
-  data: function() {
+  data: function () {
     return {
       valid: true,
       name: "",
-      nameRules: [
-        (v: any) => !!v || "Name is required",
-        (v: any) =>
-          (v && v.length >= 6) || "Name must be less than 10 characters"
-      ],
+      nameRules: [] as any[],
       password: "",
-      passwordRules: [
-        (v: any) => !!v || "A jelszót meg kell adnod",
-        (v: any) =>
-          (v && v.length >= 6) || "Name must be less than 10 characters"
-      ]
+      passwordRules: [] as any[],
+      error: false,
+      errorText: ``
     };
   },
   methods: {
     login() {
       (this.$refs.form as any).validate();
-      this.$store.dispatch("login", {
-        username: this.name,
-        password: this.password
-      });
-    }
+      this.$store
+        .dispatch("login", {
+          username: this.name,
+          password: this.password,
+        })
+        .then(() => {
+          if (this.$route.query.redirect != undefined) {
+            this.$router.push({ path: this.$route.query.redirect as string });
+          } else {
+            this.$router.push({ path: `/dashboard` });
+          }
+        })
+        .catch((e: Error) => {
+          console.log(e);
+          
+          if (e.name.includes(`Login failed!`) || e.message.includes(`Login failed!`) || e.message.includes(`status code`)) {
+            this.errorText = `Helytelen felhasználónév vagy jelszó!`;
+          } else {
+            this.errorText = `Hiba történt`
+          }
+          this.name = ``;
+          this.password = ``;
+          this.error = true
+        });
+    },
   },
-  computed: {
-    isLoggedIn: function(): boolean {
-      return this.$store.state.login.loggedIn;
-    }
-  },
-  watch: {
-      isLoggedIn: function (val) {
-          if (val) this.$router.push({ path: "/dashboard" });
-      }
+  mounted() {
+    this.$store.dispatch(`fetchSchema`)
+    .then(() => {
+      const schema = this.$store.state.schema;
+    this.nameRules = [
+        (v: string) => !!v || `Kötelező megadni`,
+        (v: string) => (v && v.length >= schema.username.min) || `Legalább ${schema.username.min} karakternek lehet!`,
+        (v: string) => (v && v.length <= schema.username.max) || `Legfeljebb ${schema.username.max} karakternek lehet!`,
+      ];
+    this.passwordRules = [
+        (v: string) => !!v || `Kötelező megadni`,
+        (v: string) => (v && v.length >= schema.password.min) || `Legalább ${schema.password.min} karakternek lehet!`,
+        (v: string) => (v && v.length <= schema.password.max) || `Legfeljebb ${schema.password.max} karakternek lehet!`,
+      ];
+    })
+    .catch(() => {
+      this.error = true;
+      this.errorText = `Nem sikerült csatlakozni a szerverhez!`
+    })
+    
   }
 });
 </script>
