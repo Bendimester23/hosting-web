@@ -33,8 +33,8 @@ categoriesRouter.put(`/new`, [ verify, isAdmin ], async (req: Request, res) => {
         })
         return
     }
-    res.status(204).send()
     invalidateCache(`allCategories`)
+    res.status(204).send()
 })
 
 categoriesRouter.patch(`/:name`, [verify, isAdmin], async (req, res) => {
@@ -61,6 +61,7 @@ categoriesRouter.patch(`/:name`, [verify, isAdmin], async (req, res) => {
     (document as any).description = req.body.description;
     (document as any).name = req.body.name;
     await document.save()
+    invalidateCache(`allCategories`)
     res.status(204).send()
 })
 
@@ -78,7 +79,7 @@ categoriesRouter.delete(`/:name`, [ verify, isAdmin ], async (req, res) => {
 
     await document.delete();
     invalidateCache(`allCategories`)
-    res.status().send()
+    res.status(204).send()
 })
 
 export default categoriesRouter;

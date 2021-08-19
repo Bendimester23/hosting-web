@@ -20,7 +20,8 @@ export default new Vuex.Store({
     categories: [],
     fetchedCategories: false,
     schema: {},
-    fetchedSchema: false
+    fetchedSchema: false,
+    addingCategory: false
   },
   mutations: {
     setToken(state: any, token: string) {
@@ -41,6 +42,9 @@ export default new Vuex.Store({
     setSchema(state, data) {
       state.schema = data;
       state.fetchedSchema = true;
+    },
+    setAddingCategory(state, data) {
+      state.addingCategory = data;
     }
   },
   actions: {
@@ -138,6 +142,22 @@ export default new Vuex.Store({
       if (store.state.fetchedSchema) return
       const { data } = await axios.get(`${API_URL}/config`)
       store.commit(`setSchema`, data)
+    },
+    async addCategory(store, data) {
+      if (!store.state.login.loggedIn) {
+        throw new Error(`Log in please!`)
+      }
+      const { status } = await axios.put(`${API_URL}/category/new`, data, {
+        headers: {
+          Authorization: store.state.login.authToken
+        }
+      })
+      
+      if (status != 204) {
+        throw new Error(`Error`)
+      }
+
+      store.dispatch(`fetchCategories`, true)
     }
   },
   modules: {

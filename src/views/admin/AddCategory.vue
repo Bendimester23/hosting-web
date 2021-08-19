@@ -3,13 +3,17 @@
     <div class="header">
       <h1>Kategóriák:</h1>
       <v-btn icon @click="refresh()" :disabled="!allowRefresh">
-        <v-icon :style="`color: ${refreshColor} !important; caret-color: ${refreshColor} !important;`">mdi-refresh</v-icon>
+        <v-icon
+          :style="`color: ${refreshColor} !important; caret-color: ${refreshColor} !important;`"
+          >mdi-refresh</v-icon
+        >
       </v-btn>
     </div>
     <div class="categories">
       <CategoryCard v-for="c in category" v-bind:key="c.id" :category="c" />
-      <v-btn class="add-category">
-          <v-icon>mdi-plus-circle-outline</v-icon>
+      <AddCategoryCard v-if="$store.state.addingCategory" />
+      <v-btn class="add-category" v-else @click="addCategory()">
+        <v-icon>mdi-plus-circle-outline</v-icon>
       </v-btn>
     </div>
   </div>
@@ -18,11 +22,13 @@
 <script lang="ts">
 import Vue from "vue";
 import CategoryCard from "@/components/admin/CategoryCard.vue";
+import AddCategoryCard from "@/components/admin/AddCategoryCard.vue";
 
 export default Vue.extend({
   name: `AddCategory`,
   components: {
     CategoryCard,
+    AddCategoryCard,
   },
   computed: {
     isLoggedIn: function (): boolean {
@@ -32,8 +38,8 @@ export default Vue.extend({
       return this.$store.state.categories;
     },
     refreshColor: function (): string {
-        return this.refreshError ? `#e74c3c` : `currentColor`;
-    }
+      return this.refreshError ? `#e74c3c` : `currentColor`;
+    },
   },
   watch: {
     isLoggedIn: function (val) {
@@ -45,20 +51,28 @@ export default Vue.extend({
   },
   data: () => ({
     allowRefresh: true,
-    refreshError: false
+    refreshError: false,
+    addingCategory: false,
   }),
   methods: {
     refresh() {
       this.allowRefresh = false;
-      this.$store.dispatch(`fetchCategories`, true).then(() => {
-        this.allowRefresh = true;
-        this.refreshError = false;
-      })
-      .catch(() =>  {
+      this.$store
+        .dispatch(`fetchCategories`, true)
+        .then(() => {
+          this.allowRefresh = true;
+          this.refreshError = false;
+        })
+        .catch(() => {
           this.refreshError = true;
-          setTimeout(() => this.allowRefresh = true, 3000)
-          setTimeout(() => this.refreshError = false, 5000)
-      })
+          setTimeout(() => (this.allowRefresh = true), 3000);
+          setTimeout(() => (this.refreshError = false), 5000);
+        });
+    },
+    addCategory() {
+      setTimeout(() => {
+        this.$store.commit(`setAddingCategory`, true);
+      }, 500);
     },
   },
 });
@@ -78,8 +92,8 @@ export default Vue.extend({
     button {
       margin-top: 8px;
       .error-icon-color {
-          color: #e74c3c !important;
-          caret-color: #e74c3c !important;
+        color: #e74c3c !important;
+        caret-color: #e74c3c !important;
       }
     }
     h1 {
