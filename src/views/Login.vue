@@ -26,17 +26,6 @@
         </v-btn>
       </v-form>
     </div>
-    <v-snackbar v-model="error">
-      {{errorText}}
-
-      <template v-slot:action="{ attrs }">
-        <v-btn color="red" icon v-bind="attrs" @click="error = false">
-          <v-icon>
-            mdi-close-circle-outline
-          </v-icon>
-        </v-btn>
-      </template>
-    </v-snackbar>
   </div>
 </template>
 
@@ -50,9 +39,7 @@ export default Vue.extend({
       name: "",
       nameRules: [] as any[],
       password: "",
-      passwordRules: [] as any[],
-      error: false,
-      errorText: ``
+      passwordRules: [] as any[]
     };
   },
   methods: {
@@ -74,13 +61,12 @@ export default Vue.extend({
           console.log(e);
           
           if (e.name.includes(`Login failed!`) || e.message.includes(`Login failed!`) || e.message.includes(`status code`)) {
-            this.errorText = `Helytelen felhasználónév vagy jelszó!`;
+            this.$store.commit(`triggerError`, `Helytelen felhasználónév vagy jelszó!`)
           } else {
-            this.errorText = `Hiba történt`
+            this.$store.commit(`triggerError`, `Hiba történt!`)
           }
           this.name = ``;
           this.password = ``;
-          this.error = true
         });
     },
   },
@@ -100,8 +86,7 @@ export default Vue.extend({
       ];
     })
     .catch(() => {
-      this.error = true;
-      this.errorText = `Nem sikerült csatlakozni a szerverhez!`
+      this.$store.commit(`triggerError`, `Nem sikerült csatlakozni a szerverhez!`)
     })
     
   }

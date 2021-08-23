@@ -21,7 +21,11 @@ export default new Vuex.Store({
     fetchedCategories: false,
     schema: {},
     fetchedSchema: false,
-    addingCategory: false
+    addingCategory: false,
+    error: {
+      has: false,
+      text: ``
+    }
   },
   mutations: {
     setToken(state: any, token: string) {
@@ -45,6 +49,15 @@ export default new Vuex.Store({
     },
     setAddingCategory(state, data) {
       state.addingCategory = data;
+    },
+    triggerError(state, text) {
+      state.error = {
+        has: true,
+        text
+      }
+    },
+    closeError(state) {
+      state.error.has = false;
     }
   },
   actions: {
@@ -63,7 +76,11 @@ export default new Vuex.Store({
           res()
           return
         }
-        axios.get(`${API_URL}/category/all`).then(({ data, status }) => {
+        axios.get(`${API_URL}/category/${store.state.login.isAdmin ? `admin/` : ``}all`, {
+          headers: {
+            Authorization: store.state.login.authToken
+          }
+        }).then(({ data, status }) => {
           if (status != 200) {
             store.commit(`setCategories`, {
               c: [{
@@ -101,7 +118,8 @@ export default new Vuex.Store({
         }
         axios.patch(`${API_URL}/category/${category.oldName}`, {
           description: category.description,
-          name: category.name
+          name: category.name,
+          hidden: category.hidden
         }, {
           headers: {
             Authorization: store.state.login.authToken

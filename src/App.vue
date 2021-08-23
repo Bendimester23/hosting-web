@@ -4,6 +4,17 @@
     <v-main>  
       <router-view/>
     </v-main>
+    <v-snackbar v-model="$store.state.error.has">
+      {{$store.state.error.text}}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="red" icon v-bind="attrs" @click="$store.commit(`closeError`)">
+          <v-icon>
+            mdi-close-circle-outline
+          </v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -20,7 +31,6 @@ export default Vue.extend({
   },
 
   data: () => ({
-    //
   }),
   mounted() {
     if (localStorage.getItem(`token`) != undefined) {
@@ -30,6 +40,8 @@ export default Vue.extend({
       })
       .catch(() => {
         this.$router.push({ path: `/login` })
+        this.$store.commit(`triggerError`, `A munkameneted lejárt!`)
+        this.$store.dispatch(`logOut`);
       })
     }
   }

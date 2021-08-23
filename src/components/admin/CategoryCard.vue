@@ -27,7 +27,9 @@
           label="Kategóriat leírása"
           v-model="newData.description"
           :rules="descriptionRules"
+          height="100px"
         ></v-textarea>
+        <v-checkbox label="Rejtett" v-model="newData.hidden"></v-checkbox>
       </v-form>
 
       <v-spacer></v-spacer>
@@ -77,10 +79,12 @@ export default Vue.extend({
     newData: {
       name: ``,
       description: ``,
+      hidden: false
     },
     currentData: {
       name: ``,
       description: ``,
+      hidden: false
     },
     isLoading: false,
     hasError: false,
@@ -110,6 +114,7 @@ export default Vue.extend({
           name: this.currentData.name,
           description: this.currentData.description,
           oldName: this.oldName,
+          hidden: this.currentData.hidden
         })
         .then(() => {
           this.isLoading = false;
@@ -162,8 +167,7 @@ export default Vue.extend({
 }
 
 .cat-card-desc {
-  white-space: pre-wrap;
-  word-wrap: normal;
+  white-space: pre-wrap !important;
 }
 
 .category-card {
@@ -172,7 +176,7 @@ export default Vue.extend({
   width: 280px;
   height: 330px;
   margin: 5px;
-  padding: 0px;
+  padding: 0;
   overflow: hidden;
   .mainContent {
     padding: 5px;

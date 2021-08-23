@@ -63,7 +63,7 @@ export const productScheme = Joi.object({
             .min(3)
             .max(3)
             .required(),
-        ammount: Joi.number()
+        amount: Joi.number()
             .positive()
             .default(0)
     }),
@@ -79,5 +79,7 @@ export const categoryScheme = Joi.object({
     description: Joi.string()
         .required()
         .min(schemas.category.description.min)
-        .max(schemas.category.description.max)
+        .max(schemas.category.description.max),
+    hidden: Joi.boolean()
+        .default(false)
 })

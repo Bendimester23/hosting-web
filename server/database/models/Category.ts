@@ -10,6 +10,10 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    hidden: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true
 });

@@ -2,19 +2,31 @@ import { Router } from 'express';
 import { invalidateCache, makeCache } from '../cache';
 import Category from '../database/models/Category';
 import { categoryScheme } from '../model/schemas';
-import { isAdmin, verify } from './verify';
+import {isAdmin, verify} from './verify';
 
 const categoriesRouter = Router();
 
-categoriesRouter.get(`/all`, makeCache(`allCategories`, 1000 * 60 * 30, async (req: Request) => {
-    return (await Category.find({})).map((e: any) => {
+categoriesRouter.get(`/all`, makeCache(`allCategories`, 1000 * 60 * 30, async (req) => {
+    return (await Category.find({})).filter((c: any) => !c.hidden).map((e: any) => {
         return {
             name: e.name,
             description: e.description,
-            id: e._id
+            id: e._id,
+            hidden: e.hidden
         }
     });
 }));
+
+categoriesRouter.get(`/admin/all`, [ verify, isAdmin ], async (req, res) => {
+    res.send((await Category.find({})).map((e: any) => {
+        return {
+            name: e.name,
+            description: e.description,
+            id: e._id,
+            hidden: e.hidden
+        }
+    }));
+});
 
 categoriesRouter.put(`/new`, [ verify, isAdmin ], async (req: Request, res) => {
     const { error } = categoryScheme.validate(req.body)
@@ -60,6 +72,7 @@ categoriesRouter.patch(`/:name`, [verify, isAdmin], async (req, res) => {
 
     (document as any).description = req.body.description;
     (document as any).name = req.body.name;
+    (document as any).hidden = req.body.hidden;
     await document.save()
     invalidateCache(`allCategories`)
     res.status(204).send()

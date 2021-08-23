@@ -5,7 +5,7 @@ const PriceSchema = new Schema({
         type: String,
         default: `USD`
     },
-    ammount: {
+    amount: {
         type: Number,
         default: 0
     }
