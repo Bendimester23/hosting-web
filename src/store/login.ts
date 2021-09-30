@@ -1,49 +1,107 @@
 import axios from 'axios';
-import { Commit } from 'vuex'
+import {Store} from "vuex";
 
-export const API_URL = `http://46.31.178.145:3000`;/*'http://localhost:3000/auth';*/
+import mStore from './index'
 
-export async function logoutA(commit: Commit) {
-    commit('setToken', '');
-    commit('setLoggedIn', false);
-    commit('setUser', {
+export const API_URL = 'http://localhost:3000';
+
+export default {
+    namespaced: true,
+    strict: true,
+    state: {
+        authToken: ``,
+        loggedIn: false,
         username: ``,
         email: ``,
         isAdmin: false
-    });
-    localStorage.removeItem(`token`)
-}
+    },
+    getters: {
+        isLoggedIn: (state: any) => state.loggedIn,
+        isAdmin: (state: any) => state.isAdmin,
+        getUsername: (state: any) => state.username,
+        getToken: (state: any) => state.authToken
+    },
+    mutations: {
+        setToken(state: any, token: string) {
+            state.authToken = token;
+        },
+        setLoggedIn(state: any, loggedIn: boolean) {
+            state.loggedIn = loggedIn;
+        },
+        setUser(state: any, user: any) {
+            state.username = user.username;
+            state.email = user.email;
+            state.isAdmin = user.isAdmin;
+        },
+    },
+    actions: {
+        logout(store: any) {
+            store.commit('setToken', '');
+            store.commit('setLoggedIn', false);
+            store.commit('setUser', {
+                username: ``,
+                email: ``,
+                isAdmin: false
+            });
+            localStorage.removeItem(`token`)
+        },
+        login(store: any, payload: any): Promise<void> {
+            return new Promise((resolve, reject) => {
+                axios.post(`${API_URL}/auth/login`, {
+                    username: payload.username,
+                    password: payload.password
+                }).then(({status, data}) => {
+                    if (status != 200) {
+                        //error
+                        store.dispatch(`logout`);
+                        reject(`Login failed`);
+                    }
 
-export async function loginA(commit: Commit, username: string, password: string) {
-    const { status, data } = await axios.post(`${API_URL}/auth/login`, {
-        username: username,
-        password: password
-    });
-    if (status != 200) {
-        //error
-        logoutA(commit)
-        throw new Error(`Login failed!`)
-        return;
-    }
-    commit('setToken', data.token);
-    commit('setLoggedIn', true);
-    commit('setUser', data.user);
-    localStorage.setItem(`token`, data.token)
-}
+                    store.commit('setToken', data.token);
+                    store.commit('setLoggedIn', true);
+                    store.commit('setUser', data.user);
+                    localStorage.setItem(`token`, data.token)
+                    resolve();
+                }).catch(reason => {
+                    store.dispatch(`logout`);
+                    reject(new Error(`Login failed`));
+                });
+            })
+        },
+        async refresh(store: any, token: string) {
+            const {data, status} = await axios.get(`${API_URL}/auth/refresh?isAdmin=false`, {
+                headers: {
+                    Authorization: token
+                }
+            });
+            if (status != 200) {
+                store.dispatch(`logout`);
+                throw new Error("Failed to refresh session.")
+            }
 
-export async function refreshA(commit: Commit, token: string) {
-    const { data, status } = await axios.get(`${API_URL}/auth/refresh?isAdmin=false`, {
-        headers: {
-            Authorization: token
+            store.commit('setToken', data.token);
+            store.commit('setLoggedIn', true);
+            store.commit('setUser', data.user);
+        },
+        async register(store: Store<any>, payload: RegisterPayload): Promise<boolean> {
+            const {data, status} = await axios.post(`${API_URL}/auth/register`, payload)
+
+            if (status != 200) {
+                await mStore.commit(`triggerError`, "Valami nem jó!")
+                return false
+            }
+
+            if (data == `VERIFY`) return true;
+
+            await mStore.commit(`triggerError`, "Minden szuper")
+            return false;
         }
-    });
-    if (status != 200) {
-        logoutA(commit);
-        throw new Error("Failed to refresh session.")
-        return;
     }
+};
 
-    commit('setToken', data.token);
-    commit('setLoggedIn', true);
-    commit('setUser', data.user);
+export type RegisterPayload = {
+    email: string;
+    name: string;
+    password: string;
+    captcha: string;
 }

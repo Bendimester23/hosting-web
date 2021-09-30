@@ -34,7 +34,7 @@ export default Vue.extend({
   }),
   mounted() {
     if (localStorage.getItem(`token`) != undefined) {
-      this.$store.dispatch(`refresh`, localStorage.getItem(`token`))
+      this.$store.dispatch(`auth/refresh`, localStorage.getItem(`token`))
       .then(() => {
         if (redirectToDashboard) this.$router.push({ path: `/dashboard` })
       })

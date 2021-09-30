@@ -15,6 +15,8 @@ export const registerSchema = Joi.object({
     password: Joi.string()
         .min(schemas.password.min)
         .max(schemas.password.max)
+        .required(),
+    captcha: Joi.string()
         .required()
 });
 

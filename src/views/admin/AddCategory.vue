@@ -32,7 +32,7 @@ export default Vue.extend({
   },
   computed: {
     isLoggedIn: function (): boolean {
-      return this.$store.state.login.loggedIn;
+      return this.$store.getters[`auth/isLoggedIn`];
     },
     category: function (): object[] {
       return this.$store.state.categories;

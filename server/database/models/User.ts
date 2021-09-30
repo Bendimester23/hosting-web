@@ -22,6 +22,14 @@ const userSchema = new Schema({
     isAdmin: {
         type: Boolean,
         required: true
+    },
+    verified: {
+        type: Boolean,
+        default: false
+    },
+    verifyCode: {
+        type: String,
+        default: ``
     }
 }, {
     timestamps: true

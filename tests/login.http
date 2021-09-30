@@ -4,7 +4,8 @@ Content-Type: application/json
 {
     "username": "teszt123",
     "password": "s3cr3tp0ss",
-    "email": "asd@gmail.com"
+    "email": "asd@gmail.com",
+    "captcha": "dfhfdh"
 }
 
 ###

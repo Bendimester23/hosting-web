@@ -1,7 +1,8 @@
 import axios from 'axios';
-import Vue from 'vue'
 import Vuex from 'vuex'
-import { API_URL, loginA, logoutA, refreshA } from './login';
+
+import { API_URL, default as auth } from './login';
+import Vue from "vue";
 
 Vue.use(Vuex)
 
@@ -9,13 +10,6 @@ export default new Vuex.Store({
   state: {
     cart: {
       size: 0
-    },
-    login: {
-      authToken: ``,
-      loggedIn: false,
-      username: ``,
-      email: ``,
-      isAdmin: false
     },
     categories: [],
     fetchedCategories: false,
@@ -28,17 +22,6 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    setToken(state: any, token: string) {
-      state.login.authToken = token;
-    },
-    setLoggedIn(state: any, loggedIn: boolean) {
-      state.login.loggedIn = loggedIn;
-    },
-    setUser(state: any, user: any) {
-      state.login.username = user.username;
-      state.login.email = user.email;
-      state.login.isAdmin = user.isAdmin;
-    },
     setCategories(state: any, data: any) {
       state.categories = data.c;
       state.fetchCategories = data.f;
@@ -61,24 +44,15 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    login(store: any, data: any) {
-      return loginA(store.commit, data.username, data.password);
-    },
-    logOut(store: any) {
-      logoutA(store.commit);
-    },
-    refresh(store: any, token: string) {
-      return refreshA(store.commit, token)
-    },
     async fetchCategories(store: any, force: boolean) {
       return new Promise<void>((res, rej) => {
         if (!force && store.state.fetchCategories) {
           res()
           return
         }
-        axios.get(`${API_URL}/category/${store.state.login.isAdmin ? `admin/` : ``}all`, {
+        axios.get(`${API_URL}/category/${store.getters[`auth/isAdmin`] ? `admin/` : ``}all`, {
           headers: {
-            Authorization: store.state.login.authToken
+            Authorization: store.getters[`auth/getToken`]
           }
         }).then(({ data, status }) => {
           if (status != 200) {
@@ -112,7 +86,7 @@ export default new Vuex.Store({
     },
     async editCategory(store: any, category: any) {
       return new Promise<void>((res, rej) => {
-        if (!store.state.login.loggedIn) {
+        if (!store.getters[`auth/isLoggedIn`]) {
           rej();
           return;
         }
@@ -122,7 +96,7 @@ export default new Vuex.Store({
           hidden: category.hidden
         }, {
           headers: {
-            Authorization: store.state.login.authToken
+            Authorization: store.getters[`auth/getToken`]
           }
         })
         .then(({ status }) => {
@@ -137,13 +111,13 @@ export default new Vuex.Store({
     },
     async deleteCategory(store, name) {
       return new Promise<void>((res, rej) => {
-        if (!store.state.login.loggedIn) {
+        if (!store.getters[`auth/isLoggedIn`]) {
           rej();
           return;
         }
         axios.delete(`${API_URL}/category/${name}`, {
           headers: {
-            Authorization: store.state.login.authToken
+            Authorization: store.getters[`auth/getToken`]
           }
         })
         .then(({ status }) => {
@@ -162,12 +136,12 @@ export default new Vuex.Store({
       store.commit(`setSchema`, data)
     },
     async addCategory(store, data) {
-      if (!store.state.login.loggedIn) {
+      if (!store.getters[`auth/isLoggedIn`]) {
         throw new Error(`Log in please!`)
       }
       const { status } = await axios.put(`${API_URL}/category/new`, data, {
         headers: {
-          Authorization: store.state.login.authToken
+          Authorization: store.getters[`auth/getToken`]
         }
       })
       
@@ -179,6 +153,7 @@ export default new Vuex.Store({
     }
   },
   modules: {
+    auth: auth as any
   },
   getters: {
     categories: state => state.categories

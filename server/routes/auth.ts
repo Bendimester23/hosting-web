@@ -6,12 +6,34 @@ import User, { UserType } from '../database/models/User';
 import config from '../config.json';
 import { Address6 } from 'ip-address';
 import { verify } from './verify';
+import axios  from 'axios';
+import { emailVerify, mailData } from '../config.json'
+import {mail} from "../index";
 
 const authRouter = express.Router();
 
 authRouter.get('/', (req, res) => {
     res.status(200).send('Auth Running correctly!');
 });
+
+function genVerifyCode() {
+    let res = ``;
+    const set = `1234567890`.split(``);
+
+    for (let i = 0; i < 6; i++) {
+        res += set[Math.floor(Math.random()*set.length)]
+    }
+    return res;
+}
+
+function sendVerifyEmail(email: string, code: string) {
+    mail.sendMail({
+        from: mailData.from,
+        to: email,
+        subject: mailData.subject,
+        text: `Megerősítő kód: ${code}`
+    })
+}
 
 authRouter.post('/register', async (req, res) => {
     const { error } = registerSchema.validate(req.body)
@@ -20,7 +42,25 @@ authRouter.post('/register', async (req, res) => {
         return;
     }
 
-    const salt = await crypt.genSalt(config.saltLenght);
+    try {
+        const { data } = await axios.post(`https://hcaptcha.com/siteverify`, `response=${req.body.captcha}&secret=${config.captchaKey}`,{
+            headers: {
+                "Content-Type": `application/x-www-form-urlencoded`
+            }
+        })
+        if (data.success != true) {
+            res.status(403).send({
+                error: `BAD_CAPTCHA`
+            })
+            return
+        }
+    } catch (e) {
+        res.status(403).send({
+            error: `BAD_CAPTCHA`
+        })
+        return
+    }
+
 
     const nameExist = await User.exists({ username: req.query.username });
     if (nameExist) {
@@ -31,16 +71,23 @@ authRouter.post('/register', async (req, res) => {
         return;
     }
 
+    const verifyCode = emailVerify ? genVerifyCode() : ``
+
+    const salt = await crypt.genSalt(config.saltLenght);
     const user = new User({
         username: req.body.username,
         email: req.body.email,
         password: await crypt.hash(req.body.password, salt),
-        isAdmin: false
+        isAdmin: false,
+        verified: !emailVerify,
+        verifyCode
     })
 
     try {
         await user.save();
-        res.status(200).send('Succes!');
+
+        sendVerifyEmail(req.body.email, verifyCode)
+        emailVerify ? res.status(200).send(`VERIFY`) : res.status(200).send('Succes!');
         return;
     } catch (err) {
         console.error(err)

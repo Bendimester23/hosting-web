@@ -1,13 +1,13 @@
 <template>
   <div class="dashboard">
     <h1>Menü</h1>
-    <p>Hello, {{ username }}!</p>
+    <p>Felhasználónév: {{ username }}!</p>
     <div class="normal-btns">
       <v-btn-toggle>
         <v-btn @click="logout()">Kilépés</v-btn>
       </v-btn-toggle>
     </div>
-    <div class="admin" v-if="$store.state.login.isAdmin">
+    <div class="admin" v-if="isAdmin">
       <h1>Admin panel</h1>
       <div class="btns">
       <v-btn-toggle>
@@ -25,15 +25,18 @@ export default Vue.extend({
   name: "Dashboard",
   computed: {
     username: function (): string {
-      return this.$store.state.login.username;
+      return this.$store.getters[`auth/getUsername`];
     },
+    isAdmin: function (): boolean {
+      return this.$store.getters[`auth/isAdmin`];
+    }
   },
   methods: {
     setCurrentPage(page: string) {
       this.$router.push({ path: page });
     },
     logout() {
-      this.$store.dispatch(`logOut`)
+      this.$store.dispatch(`auth/logout`)
       this.$router.push({ path: `/login` })
     }
   },

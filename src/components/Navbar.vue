@@ -1,7 +1,7 @@
 <template>
   <div
     class="navbar"
-    v-bind:class="{ navbarActive: showDraver, navbarHiding: hiding }"
+    v-bind:class="{ navbarActive: showDrawer, navbarHiding: hiding }"
   >
     <div class="branding" v-on:click="clickBtn(0)">
       <img
@@ -17,7 +17,7 @@
       <v-btn elevation="0" v-on:click="clickBtn(1)">Szolgáltatásaink</v-btn>
       <v-btn elevation="0" v-on:click="clickBtn(2)">Panel</v-btn>
       <v-btn elevation="0" v-on:click="clickBtn(3)"
-        >{{isLoggedIn? username : 'Bejelentkezés'}}</v-btn
+        >{{isLoggedIn ? username : 'Bejelentkezés'}}</v-btn
       >
     
       <v-btn elevation="0" v-on:click="clickBtn(4)" class="cart"
@@ -46,12 +46,12 @@ export default Vue.extend({
       mobileNavOpen: false,
       hiding: false,
       width: window.innerWidth,
-      showUserDropdow: false,
+      showUserDropdown: false,
       l
     };
   },
   computed: {
-    showDraver: function(): boolean {
+    showDrawer: function(): boolean {
       if (this.width <= 700) return this.mobileNavOpen;
       return true;
     },
@@ -59,10 +59,10 @@ export default Vue.extend({
       return this.$store.state.cart.size;
     },
     isLoggedIn: function(): boolean {
-      return this.$store.state.login.loggedIn;
+      return this.$store.getters['auth/isLoggedIn'];
     },
     username: function(): string {
-      return this.$store.state.login.username;
+      return this.$store.getters[`auth/getUsername`];
     }
   },
   mounted() {

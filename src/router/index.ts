@@ -47,6 +47,16 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
+    path: '/register',
+    name: 'Register',
+    component: () => import(/* webpackChunkName: "order" */ '../views/Register.vue'),
+    meta: {
+      needAuth: false,
+      needAdmin: false,
+      redirIfAuth: true
+    }
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import(/* webpackChunkName: "order" */ '../views/Dashboard.vue'),
@@ -64,7 +74,17 @@ const routes: Array<RouteConfig> = [
       needAuth: true,
       needAdmin: true,
       redirIfAuth: false
-    }
+    },
+  },
+  {
+    path: `/verifyEmail`,
+    name: `VerifyEmail`,
+    component: () => import(/* webpackChunkName: "order" */ `../views/VerifyEmail.vue`),
+    meta: {
+      needAuth: false,
+      needAdmin: false,
+      redirIfAuth: true
+    },
   }
 ]
 
@@ -76,7 +96,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(r => r.meta.needAuth)) {
-    if (!store.state.login.loggedIn) {
+    if (!store.getters[`auth/isLoggedIn`]) {
       next({
         path: '/login',
         query: { redirect: to.fullPath }
@@ -84,7 +104,7 @@ router.beforeEach((to, from, next) => {
     } else {
       next()
       if (to.matched.some(r => r.meta.needAdmin)) {
-        if (!store.state.login.isAdmin) {
+        if (!store.getters[`auth/isAdmin`]) {
           next({
             path: '/dashboard',
             query: { redirect: to.fullPath }
@@ -95,7 +115,7 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else if (to.matched.some(r => r.meta.redirIfAuth)) {
-    if (store.state.login.loggedIn) {
+    if (store.getters[`auth/isLoggedIn`]) {
       next({
         path: '/dashboard',
         query: { redirect: to.fullPath }
