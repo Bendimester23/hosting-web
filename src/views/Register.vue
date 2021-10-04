@@ -110,7 +110,7 @@ export default Vue.extend({
           })
           .then((v) => {
             this.loading = false;
-            if (v) this.$router.push({ path: `/verifyEmail` });
+            if (v) this.$router.push({ path: `/verifyEmail`, query: { email: this.email } });
             else {
               if (this.$route.query.redirect != undefined) {
                 this.$router.push({ path: this.$route.query.redirect as string });
@@ -119,16 +119,11 @@ export default Vue.extend({
               }
             }
           })
-          .catch((e: Error) => {
-            // console.log(e);
-            //
-            // if (e.name.includes(`Login failed!`) || e.message.includes(`Login failed!`) || e.message.includes(`status code`)) {
-            //   this.$store.commit(`triggerError`, `Helytelen felhasználónév vagy jelszó!`)
-            // } else {
-            //   this.$store.commit(`triggerError`, `Hiba történt!`)
-            // }
-            // this.name = ``;
-            // this.password = ``;
+          .catch(() => {
+            this.name = ``;
+            this.email = ``;
+            this.password = ``;
+            this.password2 = ``;
             this.loading = false;
           });
     }
@@ -153,7 +148,6 @@ export default Vue.extend({
             (v: string) => !!v || `Kötelező megadni`,
             (v: string) => (v && v.length >= schema.password.min) || `Legalább ${schema.password.min} karakternek lehet!`,
             (v: string) => (v && v.length <= schema.password.max) || `Legfeljebb ${schema.password.max} karakternek lehet!`,
-            (v: string) => v == this.password2 || `A két jelszó nem egyezik!`,
           ];
           this.password2Rules = [
             (v: string) => !!v || `Kötelező megadni`,

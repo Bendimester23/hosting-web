@@ -1,8 +1,6 @@
 import axios from 'axios';
 import {Store} from "vuex";
 
-import mStore from './index'
-
 export const API_URL = 'http://localhost:3000';
 
 export default {
@@ -86,15 +84,23 @@ export default {
         async register(store: Store<any>, payload: RegisterPayload): Promise<boolean> {
             const {data, status} = await axios.post(`${API_URL}/auth/register`, payload)
 
-            if (status != 200) {
-                await mStore.commit(`triggerError`, "Valami nem jó!")
-                return false
+            switch (status) {
+                case 201:
+                    return data == `VERIFY`;
+                case 400:
+                    store.commit(`triggerError`, `Hibás adatok!`)
+                    break
+                case 403:
+                    store.commit(`triggerError`, `Hibásan kitöltött Captcha!`)
+                    break
+                case 409:
+                    store.commit(`triggerError`, `A felhasználónév már használatban van!`)
+                    break
+                default:
+                case 500:
+                    store.commit(`triggerError`, `Belső szerverhiba történt!`)
             }
-
-            if (data == `VERIFY`) return true;
-
-            await mStore.commit(`triggerError`, "Minden szuper")
-            return false;
+            throw new Error();
         }
     }
 };

@@ -41,6 +41,8 @@ export type UserType = {
     email: string;
     password: string;
     isAdmin: boolean;
+    verified: boolean;
+    verifyCode: string;
 }
 
 export default model('User', userSchema);
