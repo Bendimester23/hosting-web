@@ -4,25 +4,9 @@
     "saltLenght": 10,
     "port": 3000,
     "token_timeout": 10000,
-    "captchaKey": "0xe2CA74A7e4C69a81e9d73d9BD077dE8b66ECcB27",
-    "emailVerify": true,
     "api_keys": {
         "paypal": "",
-        "stripe": "",
-        "hcaptcha": "0xe2CA74A7e4C69a81e9d73d9BD077dE8b66ECcB27"
-    },
-    "mailTransport": {
-        "host": "smtp.sendgrid.net",
-        "port": 465,
-        "secure": true,
-        "auth": {
-            "user": "apikey",
-            "pass": "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"
-        }
-    },
-    "mailData": {
-        "from": "Example shop <noreply@em6903.bendi.cf>",
-        "subject": "E-mail cím megerősítése."
+        "stripe": ""
     },
     "schemas": {
         "username": {
